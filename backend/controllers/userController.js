@@ -40,7 +40,21 @@ const deleteUser = async (req, res, next) => {
     }
 }
 
+const getAllUsers = async (req, res, next) => {
+    if(!req.user.isAdmin){
+        return next(errorHandler(403, 'You are not allowed to get all users'))
+    }
+
+    try {
+        const users = await User.find({}, '-password')
+        res.status(200).json(users)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     updateUser,
-    deleteUser
+    deleteUser,
+    getAllUsers
 }
