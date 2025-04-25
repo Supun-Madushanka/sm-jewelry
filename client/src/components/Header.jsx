@@ -10,6 +10,7 @@ export default function Header() {
     { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
+    { name: 'Collections', path: '/collections'}
   ];
 
   return (
@@ -39,9 +40,11 @@ export default function Header() {
       </nav>
 
       <div className="flex items-center gap-3">
-        <button className="px-4 py-2 text-sm cursor-pointer rounded-full font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition">
+        <Link to='/signin'>
+        <button className="text-[15px] px-4 py-2 text-sm cursor-pointer rounded-md font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition">
           Sign In
         </button>
+        </Link>
 
         <button 
             className="block lg:hidden"

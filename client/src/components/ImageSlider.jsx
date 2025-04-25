@@ -1,13 +1,13 @@
 import Slider from "react-slick";
-
+import img1 from "../assets/img1.jpg"
+import img2 from "../assets/img2.jpg"
+import img3 from "../assets/img3.jpg"
+import img4 from "../assets/img4.jpg"
+import img5 from "../assets/img5.jpg"
 
 const ImageSlider = () => {
   const images = [
-    "https://cdn.shopify.com/s/files/1/0840/8370/3830/articles/1667509251-saja-beraam-a7xy_sd1a8w-unsplash.jpg?v=1714646794",
-    "https://your-other-images.com/image2.jpg",
-    "https://your-other-images.com/image3.jpg",
-    "https://your-other-images.com/image4.jpg",
-    "https://your-other-images.com/image5.jpg",
+    img1,img2,img3,img4,img5
   ];
 
   const settings = {
@@ -29,7 +29,7 @@ const ImageSlider = () => {
             <img
               src={src}
               alt={`Image ${index + 1}`}
-              className="w-full h-96 object-cover"
+              className="w-full h-[400px] object-cover"
             />
           </div>
         ))}
