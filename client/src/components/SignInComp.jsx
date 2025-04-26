@@ -35,8 +35,8 @@ export default function SignInComp() {
             
             <div className="mt-4 text-center text-sm">
               <span className="text-black">Don't have an account? </span>
-              <Link to='/signup'>
-              <a className="text-blue-600 hover:text-blue-700">Sign up</a>
+              <Link to='/signup' className="text-blue-600 hover:text-blue-700">
+                Sign up
               </Link>
             </div>
           </form>
