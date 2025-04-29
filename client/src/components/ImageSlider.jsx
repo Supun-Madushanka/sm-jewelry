@@ -22,7 +22,7 @@ const ImageSlider = () => {
   };
 
   return (
-    <div className="w-full mx-auto">
+    <div className="relative  max-w-screen w-full mx-auto">
       <Slider {...settings}>
         {images.map((src, index) => (
           <div key={index}>
