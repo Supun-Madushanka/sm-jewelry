@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { useSelector, useDispatch  } from 'react-redux';
@@ -9,6 +9,7 @@ export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -29,6 +30,7 @@ export default function Header() {
         console.log(data.message);
       }else{
         dispatch(signoutSuccess())
+        navigate('/')
       }
     } catch (error) {
       console.log(error.message);

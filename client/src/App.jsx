@@ -5,6 +5,7 @@ import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
 import SignIn from './pages/SignIn.jsx';
 import SignUp from './pages/SignUp.jsx';
+import Profile from './pages/Profile.jsx';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path='/contact' element={<Contact/>}/>
         <Route path='/signin' element={<SignIn/>}/>
         <Route path='/signup' element={<SignUp/>}/>
+        <Route path='/profile' element={<Profile/>}/>
       </Routes>
     </BrowserRouter>
   )
