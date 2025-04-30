@@ -1,10 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function Header() {
   const location = useLocation();
+  const { currentUser } = useSelector((state) => state.user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -40,11 +43,30 @@ export default function Header() {
       </nav>
 
       <div className="flex items-center gap-3">
-        <Link to='/signin'>
-        <button className="text-[15px] px-4 py-2 text-sm cursor-pointer rounded-md font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition">
-          Sign In
-        </button>
-        </Link>
+        { currentUser ? (
+          <>
+            <button
+              className='text-[15px] px-4 py-2 text-sm cursor-pointer rounded-md font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition'
+              onClick={() => {}}
+            >
+              Sign Out
+            </button>
+            <Link to='/profile'>
+              <img
+                src={currentUser.profilePicture}
+                alt='User Profile'
+                className="w-10 h-10 rounded-full object-cover border-2 border-gray-300 hover:border-black"
+              />
+            </Link>
+          </>
+        ) : (
+          <Link to='/signin'>
+            <button className="text-[15px] px-4 py-2 text-sm cursor-pointer rounded-md font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition">
+              Sign In
+            </button>
+          </Link>
+        )}
+        
 
         <button 
             className="block lg:hidden"
