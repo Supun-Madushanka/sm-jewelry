@@ -3,6 +3,7 @@ import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { useSelector, useDispatch  } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice'
+import logo from "../assets/logo.png"
 
 export default function Header() {
   const location = useLocation();
@@ -42,9 +43,9 @@ export default function Header() {
       {/* Logo */}
       <Link to="/" className="block">
         <img 
-            src="https://readymadeui.com/readymadeui.svg" 
+            src={logo} 
             alt="logo" 
-            className="w-28 sm:w-36" 
+            className="h-10 sm:h-12 object-contain" 
         />
       </Link>
 
