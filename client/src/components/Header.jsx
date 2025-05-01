@@ -76,7 +76,7 @@ export default function Header() {
               <img
                 src={currentUser.profilePicture}
                 alt='User Profile'
-                className="w-10 h-10 rounded-full object-cover border-2 border-gray-300 hover:border-black"
+                className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
               />
             </Link>
           </>
