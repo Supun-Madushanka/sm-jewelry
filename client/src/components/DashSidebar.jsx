@@ -1,4 +1,4 @@
-import { LayoutGrid, LogOut } from 'lucide-react';
+import { LayoutGrid, LogOut, PieChart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -22,10 +22,25 @@ export default function DashSidebar() {
         <ul className="space-y-2">
         {currentUser.isAdmin && (
           <li>
+            <Link to="/dashboard?tab=dash">
+              <div
+                className={`flex items-center w-full p-2 rounded-lg cursor-pointer hover:bg-gray-100 ${
+                  tab === 'dash' ? 'bg-gray-200' : ''
+                }`}
+              >
+                <PieChart className="w-5 h-5 mr-3" />
+                <span>Dashboard</span>
+              </div>
+            </Link>
+          </li>
+          )}
+          <li></li>
+        {currentUser.isAdmin && (
+          <li>
             <Link to="/dashboard?tab=category">
               <div
                 className={`flex items-center w-full p-2 rounded-lg cursor-pointer hover:bg-gray-100 ${
-                  tab === 'category' ? 'bg-gray-200 font-semibold' : ''
+                  tab === 'category' ? 'bg-gray-200' : ''
                 }`}
               >
                 <LayoutGrid className="w-5 h-5 mr-3" />
