@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu } from 'lucide-react';
-import { useState } from 'react';
+import { Menu, User, LogOut, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch  } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice'
 import logo from "../assets/logo.png"
@@ -10,7 +10,9 @@ export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const dropdownRef = useRef(null)
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -30,6 +32,7 @@ export default function Header() {
       if(!res.ok) {
         console.log(data.message);
       }else{
+        setIsProfileDropdownOpen(false);
         dispatch(signoutSuccess())
         navigate('/')
       }
@@ -37,6 +40,20 @@ export default function Header() {
       console.log(error.message);
     }
   }
+
+  // close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target)){
+        setIsProfileDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <header className="flex items-center justify-between shadow-md py-4 px-4 sm:px-10 bg-white min-h-[70px] tracking-wide relative z-50">
@@ -66,21 +83,39 @@ export default function Header() {
 
       <div className="flex items-center gap-3">
         { currentUser ? (
-          <>
-            <button
-              className='text-[15px] px-4 py-2 text-sm cursor-pointer rounded-md font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition'
-              onClick={handleSignOut}
+          <div className='relative' ref={dropdownRef}>
+            <div 
+              className="flex items-center gap-2 cursor-pointer" 
+              onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
             >
-              Sign Out
-            </button>
-            <Link to='/profile'>
               <img
                 src={currentUser.profilePicture}
-                alt='User Profile'
-                className="w-10 h-10 rounded-full object-cover border-2 border-gray-300"
+                alt="User Profile"
+                className="w-10 h-10 rounded-full object-cover border-none"
               />
-            </Link>
-          </>
+              <ChevronDown className="w-4 h-4 text-gray-600" />
+            </div>
+
+            {isProfileDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                <Link 
+                  to="/profile" 
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setIsProfileDropdownOpen(false)}
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Link>
+                <button 
+                  className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
           <Link to='/signin'>
             <button className="text-[15px] px-4 py-2 text-sm cursor-pointer rounded-md font-medium bg-white text-black border border-gray-900 hover:bg-black hover:text-white transition">
