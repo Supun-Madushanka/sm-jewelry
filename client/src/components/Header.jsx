@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, User, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, LayoutDashboard  } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch  } from 'react-redux';
 import { signoutSuccess } from '../redux/user/userSlice'
@@ -105,6 +105,14 @@ export default function Header() {
                 >
                   <User className="w-4 h-4 mr-2" />
                   Profile
+                </Link>
+                <Link 
+                  to="/dashboard" 
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setIsProfileDropdownOpen(false)}
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
                 </Link>
                 <button 
                   className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
