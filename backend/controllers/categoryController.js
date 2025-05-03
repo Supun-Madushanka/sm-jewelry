@@ -27,6 +27,21 @@ const createCategory = async (req, res, next) => {
     }
 }
 
+const getCategories = async (req, res, next) => {
+    try {
+        const categories = await Category.find()
+
+        if(categories.length === 0){
+            return next(errorHandler(404, 'No categories found'))
+        }
+
+        res.status(200).json(categories)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
-    createCategory
+    createCategory,
+    getCategories
 }

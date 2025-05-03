@@ -152,7 +152,7 @@ export default function DashCategory() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-            <div className="flex justify-between items-center border-b px-6 py-4">
+            <div className="flex justify-between items-center px-6 py-4">
               <h3 className="text-lg font-semibold text-gray-900">Add Category</h3>
               <button 
                 onClick={closeModal}
@@ -170,7 +170,7 @@ export default function DashCategory() {
                 <input
                   type="text"
                   id="category-name"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
                   placeholder="Enter category name"
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
@@ -184,7 +184,7 @@ export default function DashCategory() {
                 <textarea
                   id="category-description"
                   rows="4"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
                   placeholder="Enter category description"
                   value={categoryDescription}
                   onChange={(e) => setCategoryDescription(e.target.value)}
@@ -202,7 +202,7 @@ export default function DashCategory() {
                 <button
                   type="button"
                   onClick={handleSaveCategory}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors w-full sm:w-auto"
                 >
                   Save Category
                 </button>
