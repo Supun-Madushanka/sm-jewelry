@@ -54,8 +54,38 @@ const deleteCategory = async (req, res, next) => {
     }
 }
 
+const updateCategory = async (req, res, next) => {
+    try {
+        const category = await Category.findById(req.params.categoryId)
+
+        if(!category){
+            return next(errorHandler(404, 'Category not found'))
+        }
+
+        if(category.userId !== req.user.id){
+            return next(errorHandler(403, 'Not allowed to update this category'))
+        }
+
+        const updatedCategory = await Category.findByIdAndUpdate(
+            req.params.categoryId,
+            {
+                $set: {
+                    categoryName: req.body.categoryName,
+                    description: req.body.description
+                }
+            },
+            { new: true }
+        )
+
+        res.status(200).json(updatedCategory)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     createCategory,
     getCategories,
-    deleteCategory
+    deleteCategory,
+    updateCategory
 }
