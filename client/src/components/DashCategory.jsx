@@ -91,6 +91,23 @@ export default function DashCategory() {
     setSearchQuery(e.target.value);
   };
 
+  const handleDelete = async (categoryId) => {
+    try {
+      const res = await fetch(`/api/v1/category/delete/${categoryId}`, {
+        method: 'DELETE'
+      }) 
+  
+      const data = await res.json()
+      if(!res.ok){
+        console.log(data.message);
+      }
+
+      setCategories((prev) => prev.filter(cat => cat._id !== categoryId));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   const filteredCategories = categories.filter(category => 
     category.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -153,7 +170,9 @@ export default function DashCategory() {
                             onMouseLeave={closeDropdown}
                           >
                             <div className="py-1">
-                              <button className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              <button 
+                                className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
                                 <Eye className="mr-3 h-4 w-4" />
                                 View
                               </button>
@@ -161,7 +180,10 @@ export default function DashCategory() {
                                 <Edit className="mr-3 h-4 w-4" />
                                 Edit
                               </button>
-                              <button className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                              <button 
+                                className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                onClick={() => handleDelete(category._id)}
+                              >
                                 <Trash className="mr-3 h-4 w-4" />
                                 Delete
                               </button>
