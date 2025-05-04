@@ -4,24 +4,54 @@ import { Search, X, Edit, Trash, MoreHorizontal, Eye } from 'lucide-react';
 export default function DashCategory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryName, setCategoryName] = useState('');
-  const [categoryDescription, setCategoryDescription] = useState('');
   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
-  
-  // Sample data for demonstration
-  const [categories, setCategories] = useState([
-    { name: 'Electronics', description: 'Electronic devices and accessories' },
-    { name: 'Clothing', description: 'All types of apparel and fashion items' },
-    { name: 'Books', description: 'Fiction and non-fiction books' },
-    { name: 'Home & Kitchen', description: 'Household items and kitchen appliances' },
-  ]);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [formData, setFormData] = useState({})
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
     setIsModalOpen(false);
-    setCategoryName('');
-    setCategoryDescription('');
+    setFormData({ categoryName: '', description: '' });
+    setErrorMessage(null)
   };
+
+  const handleChange = async (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    })
+  }
+
+  const handleSave = async () => {
+    try {
+      setLoading(true)
+      setErrorMessage(null)
+      const res = await fetch('/api/v1/category/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      const data = await res.json();
+
+      if(data.success === false){
+        setLoading(false)
+        return setErrorMessage(data.message)
+      }
+
+      if(res.ok){
+        setLoading(false)
+        closeModal()
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      setLoading(false);
+    }
+  }
 
   const toggleDropdown = (index) => {
     setOpenDropdownIndex(openDropdownIndex === index ? null : index);
@@ -33,19 +63,6 @@ export default function DashCategory() {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-  };
-
-  const handleSaveCategory = () => {
-    if (categoryName.trim()) {
-      const newCategory = {
-        id: categories.length > 0 ? Math.max(...categories.map(c => c.id)) + 1 : 1,
-        name: categoryName.trim(),
-        description: categoryDescription.trim()
-      };
-      
-      setCategories([...categories, newCategory]);
-      closeModal();
-    }
   };
 
   const filteredCategories = categories.filter(category => 
@@ -164,30 +181,28 @@ export default function DashCategory() {
             
             <div className="p-6">
               <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2" htmlFor="category-name">
+                <label className="block text-gray-700 font-medium mb-2" htmlFor="categoryName">
                   Category Name
                 </label>
                 <input
                   type="text"
-                  id="category-name"
+                  id="categoryName"
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
                   placeholder="Enter category name"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
                 />
               </div>
               
               <div className="mb-6">
-                <label className="block text-gray-700 font-medium mb-2" htmlFor="category-description">
+                <label className="block text-gray-700 font-medium mb-2" htmlFor="description">
                   Description
                 </label>
                 <textarea
-                  id="category-description"
+                  id="description"
                   rows="4"
+                  onChange={handleChange}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
                   placeholder="Enter category description"
-                  value={categoryDescription}
-                  onChange={(e) => setCategoryDescription(e.target.value)}
                 ></textarea>
               </div>
               
@@ -201,12 +216,20 @@ export default function DashCategory() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSaveCategory}
+                  disabled={loading}
+                  onClick={handleSave}
                   className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors w-full sm:w-auto"
                 >
-                  Save Category
+                  {loading ? (
+                    <>
+                      <span>Saving...</span>
+                    </>
+                  ): (
+                    'Save Category'
+                  )}
                 </button>
               </div>
+              {errorMessage && <p className="text-red-500 text-center mt-2 font-semibold">{errorMessage}</p>}
             </div>
           </div>
         </div>
