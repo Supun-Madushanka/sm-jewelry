@@ -6,78 +6,104 @@ export default function DashCategory() {
   const [searchQuery, setSearchQuery] = useState('');
   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  const[error, setError] = useState(null)
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [catloading, setCatLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [formData, setFormData] = useState({})
+  const [formData, setFormData] = useState({ categoryName: '', description: '' });
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentCategoryId, setCurrentCategoryId] = useState(null);
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = (isEdit = false, category = null) => {
+    if (isEdit && category) {
+      setIsEditing(true);
+      setCurrentCategoryId(category._id);
+      setFormData({
+        categoryName: category.categoryName,
+        description: category.description,
+      });
+    } else {
+      setIsEditing(false);
+      setCurrentCategoryId(null);
+      setFormData({ categoryName: '', description: '' });
+    }
+    setIsModalOpen(true);
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
     setFormData({ categoryName: '', description: '' });
-    setErrorMessage(null)
+    setErrorMessage(null);
+    setIsEditing(false);
+    setCurrentCategoryId(null);
   };
 
   useEffect(() => {
-    fetchCategories()
-  }, [])
-  
+    fetchCategories();
+  }, []);
+
   const fetchCategories = async () => {
     try {
-      setCatLoading(true)
-      const res = await fetch('/api/v1/category/getCategories')
-      const data = await res.json()
+      setCatLoading(true);
+      const res = await fetch('/api/v1/category/getCategories');
+      const data = await res.json();
 
       if (!res.ok) {
         setError(data.message);
         setCatLoading(false);
         return;
       }
-      setCategories(data)
-      setCatLoading(false)
+      setCategories(data);
+      setCatLoading(false);
     } catch (error) {
       setError(error.message);
       setCatLoading(false);
     }
-  }
+  };
 
   const handleChange = async (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value
-    })
-  }
+    });
+  };
 
   const handleSave = async () => {
     try {
-      setLoading(true)
-      setErrorMessage(null)
-      const res = await fetch('/api/v1/category/create', {
-        method: 'POST',
+      setLoading(true);
+      setErrorMessage(null);
+      
+      const endpoint = isEditing 
+        ? `/api/v1/category/update/${currentCategoryId}`
+        : '/api/v1/category/create';
+      
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      const res = await fetch(endpoint, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData)
       });
-      
+
       const data = await res.json();
 
-      if(data.success === false){
-        setLoading(false)
-        return setErrorMessage(data.message)
+      if (data.success === false) {
+        setLoading(false);
+        return setErrorMessage(data.message);
       }
 
-      if(res.ok){
-        setLoading(false)
-        closeModal()
-        fetchCategories()
+      if (res.ok) {
+        setLoading(false);
+        closeModal();
+        fetchCategories();
       }
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
     }
-  }
+  };
 
   const toggleDropdown = (index) => {
     setOpenDropdownIndex(openDropdownIndex === index ? null : index);
@@ -95,10 +121,10 @@ export default function DashCategory() {
     try {
       const res = await fetch(`/api/v1/category/delete/${categoryId}`, {
         method: 'DELETE'
-      }) 
-  
-      const data = await res.json()
-      if(!res.ok){
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
         console.log(data.message);
       }
 
@@ -106,19 +132,24 @@ export default function DashCategory() {
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
-  const filteredCategories = categories.filter(category => 
+  const handleEdit = (category) => {
+    openModal(true, category);
+    closeDropdown();
+  };
+
+  const filteredCategories = categories.filter(category =>
     category.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen w-full">
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6">
         {/* Header */}
         <h1 className="text-2xl font-bold text-black">Manage Category</h1>
         <p className="text-gray-700 mt-1 mb-6">Add, Edit, View or Remove category.</p>
-        
+
         {/* Search and Add Button */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <div className="relative w-full sm:w-96">
@@ -132,7 +163,7 @@ export default function DashCategory() {
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           </div>
           <button
-            onClick={openModal}
+            onClick={() => openModal()}
             className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors w-full sm:w-auto"
           >
             Add Category
@@ -176,7 +207,10 @@ export default function DashCategory() {
                                 <Eye className="mr-3 h-4 w-4" />
                                 View
                               </button>
-                              <button className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                              <button 
+                                className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                onClick={() => handleEdit(category)}
+                              >
                                 <Edit className="mr-3 h-4 w-4" />
                                 Edit
                               </button>
@@ -206,12 +240,14 @@ export default function DashCategory() {
         </div>
       </div>
 
-      {/* Add Category Modal */}
+      {/* Add/Edit Category Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
             <div className="flex justify-between items-center px-6 py-4">
-              <h3 className="text-lg font-semibold text-gray-900">Add Category</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                {isEditing ? 'Update Category' : 'Add Category'}
+              </h3>
               <button 
                 onClick={closeModal}
                 className="text-gray-400 hover:text-gray-600"
@@ -228,6 +264,7 @@ export default function DashCategory() {
                 <input
                   type="text"
                   id="categoryName"
+                  value={formData.categoryName}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
                   placeholder="Enter category name"
@@ -241,6 +278,7 @@ export default function DashCategory() {
                 <textarea
                   id="description"
                   rows="4"
+                  value={formData.description}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700"
                   placeholder="Enter category description"
@@ -265,8 +303,8 @@ export default function DashCategory() {
                     <>
                       <span>Saving...</span>
                     </>
-                  ): (
-                    'Save Category'
+                  ) : (
+                    isEditing ? 'Update' : 'Save'
                   )}
                 </button>
               </div>
