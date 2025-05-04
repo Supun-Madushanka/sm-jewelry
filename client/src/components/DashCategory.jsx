@@ -123,7 +123,7 @@ export default function DashCategory() {
         </div>
         
         {/* Categories Table */}
-        <div className="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+        <div className="relative rounded-lg border border-gray-200 shadow-sm">
           <table className="w-full border-collapse bg-white text-left text-sm text-gray-800">
             <thead className="bg-gray-50">
               <tr>
@@ -150,12 +150,6 @@ export default function DashCategory() {
                         {openDropdownIndex === index && (
                           <div
                             className="absolute right-0 w-48 rounded-md bg-white shadow-lg ring-1 ring-gray-100 ring-opacity-10 z-10"
-                            style={{
-                              top: 'auto',
-                              bottom: index >= filteredCategories.length - 2 ? '100%' : 'auto',
-                              marginTop: index >= filteredCategories.length - 2 ? 0 : '8px',
-                              marginBottom: index >= filteredCategories.length - 2 ? '8px' : 0
-                            }}
                             onMouseLeave={closeDropdown}
                           >
                             <div className="py-1">
