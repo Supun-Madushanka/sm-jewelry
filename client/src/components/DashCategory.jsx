@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, X, Edit, Trash, MoreHorizontal, Eye } from 'lucide-react';
 
 export default function DashCategory() {
@@ -6,7 +6,9 @@ export default function DashCategory() {
   const [searchQuery, setSearchQuery] = useState('');
   const [openDropdownIndex, setOpenDropdownIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const[error, setError] = useState(null)
   const [loading, setLoading] = useState(false);
+  const [catloading, setCatLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({})
 
@@ -16,6 +18,29 @@ export default function DashCategory() {
     setFormData({ categoryName: '', description: '' });
     setErrorMessage(null)
   };
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+  
+  const fetchCategories = async () => {
+    try {
+      setCatLoading(true)
+      const res = await fetch('/api/v1/category/getCategories')
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.message);
+        setCatLoading(false);
+        return;
+      }
+      setCategories(data)
+      setCatLoading(false)
+    } catch (error) {
+      setError(error.message);
+      setCatLoading(false);
+    }
+  }
 
   const handleChange = async (e) => {
     setFormData({
@@ -46,6 +71,7 @@ export default function DashCategory() {
       if(res.ok){
         setLoading(false)
         closeModal()
+        fetchCategories()
       }
     } catch (error) {
       setErrorMessage(error.message);
@@ -66,10 +92,9 @@ export default function DashCategory() {
   };
 
   const filteredCategories = categories.filter(category => 
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.description.toLowerCase().includes(searchQuery.toLowerCase())
+    category.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  
   return (
     <div className="p-6 bg-gray-50 min-h-screen w-full">
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6">
@@ -110,8 +135,8 @@ export default function DashCategory() {
             <tbody className="divide-y divide-gray-100 border-t border-gray-100">
               {filteredCategories.length > 0 ? (
                 filteredCategories.map((category, index) => (
-                  <tr key={category.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">{category.name}</td>
+                  <tr key={category._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">{category.categoryName}</td>
                     <td className="px-6 py-4">{category.description}</td>
                     <td className="px-6 py-4">
                       <div className="relative inline-block text-left">
