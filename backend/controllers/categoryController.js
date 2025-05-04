@@ -41,7 +41,21 @@ const getCategories = async (req, res, next) => {
     }
 }
 
+const deleteCategory = async (req, res, next) => {
+    if(!req.user.isAdmin){
+        return next(errorHandler(403, 'You are not allowed to delete this post'));
+    }
+
+    try {
+        await Category.findByIdAndDelete(req.params.categoryId)
+        res.status(200).json('The category has been deleted')
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     createCategory,
-    getCategories
+    getCategories,
+    deleteCategory
 }
