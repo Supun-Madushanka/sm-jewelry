@@ -13,6 +13,8 @@ export default function DashCategory() {
   const [formData, setFormData] = useState({ categoryName: '', description: '' });
   const [isEditing, setIsEditing] = useState(false);
   const [currentCategoryId, setCurrentCategoryId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const openModal = (isEdit = false, category = null) => {
     if (isEdit && category) {
@@ -36,6 +38,8 @@ export default function DashCategory() {
     setErrorMessage(null);
     setIsEditing(false);
     setCurrentCategoryId(null);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   useEffect(() => {
@@ -72,19 +76,46 @@ export default function DashCategory() {
     try {
       setLoading(true);
       setErrorMessage(null);
+
+      let imageUrl = null;
+
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        formData.append('upload_preset', 'user_profile_photos');
+
+        const cloudinaryRes = await fetch(
+          'https://api.cloudinary.com/v1_1/dxhzkog1c/image/upload',
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        const cloudinaryData = await cloudinaryRes.json();
+        if (cloudinaryData.secure_url) {
+          imageUrl = cloudinaryData.secure_url;
+        }
+      }
       
       const endpoint = isEditing 
         ? `/api/v1/category/update/${currentCategoryId}`
         : '/api/v1/category/create';
       
       const method = isEditing ? 'PUT' : 'POST';
+
+      // Include the image URL in the form data
+      const categoryData = {
+        ...formData,
+        banner: imageUrl || formData.banner,
+      };
       
       const res = await fetch(endpoint, {
         method: method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(categoryData)
       });
 
       const data = await res.json();
@@ -175,6 +206,7 @@ export default function DashCategory() {
           <table className="w-full border-collapse bg-white text-left text-sm text-gray-800">
             <thead className="bg-gray-50">
               <tr>
+                <th scope="col" className="px-6 py-4 font-medium text-gray-900">Banner</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Category Name</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Description</th>
                 <th scope="col" className="px-6 py-4 font-medium text-gray-900">Actions</th>
@@ -184,6 +216,13 @@ export default function DashCategory() {
               {filteredCategories.length > 0 ? (
                 filteredCategories.map((category, index) => (
                   <tr key={category._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <img 
+                        src={category.banner} 
+                        alt={category.categoryName}
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                    </td>
                     <td className="px-6 py-4">{category.categoryName}</td>
                     <td className="px-6 py-4">{category.description}</td>
                     <td className="px-6 py-4">
@@ -230,7 +269,7 @@ export default function DashCategory() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
                     No categories found
                   </td>
                 </tr>
@@ -257,7 +296,7 @@ export default function DashCategory() {
             </div>
             
             <div className="p-6">
-              <div className="mb-4">
+              <div className="mb-6">
                 <label className="block text-gray-700 font-medium mb-2" htmlFor="categoryName">
                   Category Name
                 </label>
@@ -285,6 +324,37 @@ export default function DashCategory() {
                 ></textarea>
               </div>
               
+              <div className="mb-6">
+                <label className="block text-gray-700 font-medium mb-2">
+                  Banner Image
+                </label>
+                <div className="mt-2">
+                  {imagePreview && (
+                    <div className="mb-4">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setImageFile(file);
+                        setImagePreview(URL.createObjectURL(file));
+                      }
+                    }}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                      file:rounded-md file:border-0 file:text-sm file:font-semibold
+                      file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                  />
+                </div>
+              </div>
+
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
