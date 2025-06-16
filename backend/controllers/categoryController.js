@@ -7,7 +7,7 @@ const createCategory = async (req, res, next) => {
             return next(errorHandler(403, "Not allowed to create category"))
         }
 
-        const { categoryName, description } = req.body
+        const { categoryName, description, banner } = req.body
 
         if(!categoryName) {
             return next(errorHandler(400, 'Category name is required'))
@@ -16,7 +16,8 @@ const createCategory = async (req, res, next) => {
         const newCategory = new Category({
             userId: req.user.id,
             categoryName,
-            description
+            description,
+            banner
         })
 
         const savedCategory = await newCategory.save()
@@ -71,7 +72,8 @@ const updateCategory = async (req, res, next) => {
             {
                 $set: {
                     categoryName: req.body.categoryName,
-                    description: req.body.description
+                    description: req.body.description,
+                    banner: req.body.banner
                 }
             },
             { new: true }

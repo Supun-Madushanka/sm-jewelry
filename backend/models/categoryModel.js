@@ -13,6 +13,11 @@ const categorySchema = new mongoose.Schema({
 
     description: {
         type: String
+    },
+    
+    banner: {
+        type: String,
+        default: 'https://www.brilliance.com/cdn-cgi/image/f=webp,width=1440,height=1440,quality=90/sites/default/files/vue/collections/engagement-rings-diamond_og.jpg'
     }
 }, {timestamps: true})
 
