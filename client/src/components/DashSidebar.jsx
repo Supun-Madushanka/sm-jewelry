@@ -1,4 +1,4 @@
-import { LayoutGrid, LogOut, PieChart } from 'lucide-react';
+import { LayoutGrid, LogOut, PieChart, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -34,7 +34,6 @@ export default function DashSidebar() {
             </Link>
           </li>
           )}
-          <li></li>
         {currentUser.isAdmin && (
           <li>
             <Link to="/dashboard?tab=category">
@@ -45,6 +44,20 @@ export default function DashSidebar() {
               >
                 <LayoutGrid className="w-5 h-5 mr-3" />
                 <span>Category</span>
+              </div>
+            </Link>
+          </li>
+          )}
+          {currentUser.isAdmin && (
+          <li>
+            <Link to="/dashboard?tab=users">
+              <div
+                className={`flex items-center w-full p-2 rounded-lg cursor-pointer hover:bg-gray-100 ${
+                  tab === 'users' ? 'bg-gray-200' : ''
+                }`}
+              >
+                <Users className="w-5 h-5 mr-3" />
+                <span>Users</span>
               </div>
             </Link>
           </li>
